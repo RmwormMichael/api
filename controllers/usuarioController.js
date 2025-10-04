@@ -19,7 +19,7 @@ const registrar = async (req, res) => {
             nombre,
             email,
             password,
-            rol: "admin",
+            rol: "cliente",
             token: generarId(),  // Generar un token para la confirmación de cuenta
         };
 
