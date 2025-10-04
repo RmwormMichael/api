@@ -12,38 +12,12 @@ dotenv.config();
 
 connectarDB();
 
-const frontendUrl = process.env.FRONTEND_URL || "";
-const whitelist = [
-  "https://globo-arte.onrender.com", // frontend en Render
-  "http://localhost:5173",
-  "http://127.0.0.1:5503"            // frontend local
-];
-
-
-   
-  console.log("Whitelist:", whitelist);  // Verifica que ahora esté con el puerto correcto
-  
-// Configuración de CORS
-const corsOptions = {
-  origin: function(origin, callback) {
-    if (!origin) return callback(null, true); // permite Postman o requests sin origin
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error("No permitido por CORS"));
-    }
-  },
+// Permitir cualquier origen
+app.use(cors({
+  origin: "*", // ⚠️ permite cualquier URL
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-};
-
-app.use(cors(corsOptions));
-
-
-
-  
-  
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 
 //Routing

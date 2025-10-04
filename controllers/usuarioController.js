@@ -100,6 +100,7 @@ const confirmar = async (req, res) => {
         // Actualizar la columna confirmed a true
         await Usuario.update(usuario.id_user, { confirmed: true });
 
+        
         console.log("Cuenta confirmada para:", usuario.email);
 
         // ✅ Redirige al frontend después de confirmar
