@@ -44,16 +44,19 @@ const registrar = async (req, res) => {
 // Autenticar usuario o iniciar sesión
 const autenticar = async (req, res) => {
     const { email, password } = req.body;
+    console.log("Login attempt:", email, password);
 
     try {
         const usuario = await Usuario.findOne(email);
-        
+        console.log("Usuario encontrado:", usuario);
+
         if (!usuario) {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
 
         const esValido = await Usuario.comprobarPassword(email, password);
-        
+        console.log("Contraseña válida:", esValido);
+
         if (!esValido) {
             return res.status(401).json({ message: 'Contraseña incorrecta' });
         }
@@ -65,7 +68,8 @@ const autenticar = async (req, res) => {
             rol: usuario.rol,
         };
 
-        const token = generarJWT(usuario.id_user, usuario.rol);  
+        const token = generarJWT(usuario.id_user, usuario.rol);
+        console.log("Token generado:", token);
 
         res.status(200).json({
             message: 'Usuario autenticado',
@@ -74,10 +78,11 @@ const autenticar = async (req, res) => {
         });
 
     } catch (error) {
-        console.error(error);
+        console.error("Error en login:", error);
         res.status(500).json({ message: 'Error en el servidor' });
     }
 };
+
 
 
 
