@@ -12,22 +12,26 @@ dotenv.config();
 
 connectarDB();
 
+const frontendUrl = process.env.FRONTEND_URL || "";
 const whitelist = [
-    process.env.FRONTEND_URL.split('/client')[0],   // Esto mantiene el 5501
-    "http://127.0.0.1:5503"  // Añadir el puerto 5502 aquí
-  ];
+  frontendUrl ? frontendUrl.replace(/\/client.*/, "") : null,
+  "http://127.0.0.1:5503"
+].filter(Boolean);
+
    
   console.log("Whitelist:", whitelist);  // Verifica que ahora esté con el puerto correcto
   
 // Configuración de CORS
 const corsOptions = {
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://127.0.0.1:5503', 'http://localhost:5503'], // Orígenes permitidos
-  methods: ['GET', 'POST','PUT', 'DELETE'], // Métodos permitidos
-  allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
-  credentials: true // ← IMPORTANTE para cookies/tokens
+  origin: whitelist,
+  methods: ['GET', 'POST','PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 };
+
+app.use(cors(corsOptions));
+
   
-  app.use(cors(corsOptions));
   
 
 
