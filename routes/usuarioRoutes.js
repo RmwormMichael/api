@@ -30,21 +30,21 @@ router.get("/perfil", checkAuth, perfil);
 
 //TODO rutas admin
 
-router.get("/usuarios", getUsuarios);
+router.get("/", getUsuarios);
 
 
 
 
-router.put("/usuarios/:id", updateUsuario);
+router.put("/:id", updateUsuario);
 
 
 
 // Obtener un usuario por su ID
-router.get("/usuarios/:id", getUserById);
+router.get("/:id", getUserById);
 
 
 // Eliminar un usuario por su ID
-router.delete("/usuarios/:id", deleteUser);
+router.delete("/:id", deleteUser);
 
 
 export default router;

@@ -1,26 +1,24 @@
 // config/db.js
-import mysql from "mysql2/promise"; // Soporta async/await
-import pkg from "pg"; // Para PostgreSQL
+import pkg from "pg";
 const { Pool } = pkg;
+import mysql from "mysql2/promise"; // Solo para entorno local si lo necesitas
 
-let connection = null;
+let pool = null;
 
 const conectarDB = async () => {
   try {
-    // Detectar entorno por variable
     if (process.env.USE_POSTGRES === "true") {
-      // ✅ CONEXIÓN A POSTGRES (Render)
-      const pool = new Pool({
-        connectionString: process.env.DATABASE_URL,
-        ssl: { rejectUnauthorized: false }
-      });
-
-      await pool.connect();
-      console.log("✅ Conectado a PostgreSQL en Render");
-      connection = pool;
+      if (!pool) {
+        pool = new Pool({
+          connectionString: process.env.DATABASE_URL,
+          ssl: { rejectUnauthorized: false }
+        });
+        console.log("✅ Conectado a PostgreSQL en Render");
+      }
+      return pool;
     } else {
-      // ✅ CONEXIÓN A MYSQL LOCAL (Workbench)
-      connection = await mysql.createConnection({
+      // ✅ Para entorno LOCAL (MySQL Workbench)
+      const mysqlConnection = await mysql.createConnection({
         host: process.env.MYSQL_HOST,
         user: process.env.MYSQL_USER,
         password: process.env.MYSQL_PASSWORD,
@@ -30,11 +28,11 @@ const conectarDB = async () => {
       });
 
       console.log(
-        `✅ MySQL conectado en ${connection.config.host}:${connection.config.port}`
+        `✅ MySQL conectado en ${mysqlConnection.config.host}:${mysqlConnection.config.port}`
       );
-    }
 
-    return connection;
+      return mysqlConnection;
+    }
   } catch (error) {
     console.error("❌ Error al conectar a la base de datos:", error.message);
     process.exit(1);
@@ -42,4 +40,3 @@ const conectarDB = async () => {
 };
 
 export default conectarDB;
-export { connection };

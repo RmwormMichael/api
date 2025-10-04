@@ -14,9 +14,10 @@ connectarDB();
 
 const frontendUrl = process.env.FRONTEND_URL || "";
 const whitelist = [
-  frontendUrl ? frontendUrl.replace(/\/client.*/, "") : null,
-  "http://127.0.0.1:5503"
-].filter(Boolean);
+  "https://globo-arte.onrender.com", // frontend en Render
+  "http://127.0.0.1:5503"            // frontend local
+];
+
 
    
   console.log("Whitelist:", whitelist);  // Verifica que ahora esté con el puerto correcto
@@ -24,12 +25,13 @@ const whitelist = [
 // Configuración de CORS
 const corsOptions = {
   origin: whitelist,
-  methods: ['GET', 'POST','PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 };
 
 app.use(cors(corsOptions));
+
 
   
   
