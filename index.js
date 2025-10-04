@@ -39,6 +39,7 @@ app.use('/api/orders', ordersRoutes);
 
 const PORT = process.env.PORT || 4000;
 
-const servidor = app.listen(4000, () =>{
-    console.log(`servidor corriendo en el puerto ${PORT}`)
+const servidor = app.listen(PORT, () => {
+  console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
+
