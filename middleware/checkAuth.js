@@ -1,3 +1,4 @@
+// middleware/checkAuth.js
 import jwt from "jsonwebtoken";
 import conectarDB from "../config/db.js"; 
 
@@ -16,16 +17,18 @@ const checkAuth = async (req, res, next) => {
             "SELECT id_user, nombre, email, rol FROM user WHERE id_user = ?",
             [decoded.id],
             (error, results) => {
+                // NO cierres la conexión aquí dentro del callback
                 if (error || results.length === 0) {
+                    if (connection.end) connection.end(); // Solo cerrar si hay error
                     return res.status(401).json({ msg: "Token no válido" });
                 }
 
-                req.usuario = results[0];  // Incluye el rol del usuario
+                req.usuario = results[0];
+                if (connection.end) connection.end(); // Cerrar después de usar los resultados
                 next();
             }
         );
 
-        connection.end();
     } catch (error) {
         console.error("Error en la autenticación:", error);
         res.status(401).json({ msg: "Token no válido" });

@@ -60,7 +60,9 @@ const getOrder = async (req, res) => {
 // Obtener todos los pedidos del usuario actual
 const getMyOrders = async (req, res) => {
     try {
+        console.log('Obteniendo órdenes para usuario:', req.usuario.id_user);
         const orders = await Orders.getByUserId(req.usuario.id_user);
+        console.log('Órdenes encontradas:', orders);
         res.json(orders);
     } catch (error) {
         console.error("Error al obtener pedidos del usuario:", error);

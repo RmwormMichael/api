@@ -111,16 +111,17 @@ class Orders {
     }
 
     // Obtener pedidos de un usuario
+    // Obtener pedidos de un usuario - CORREGIDO
     static async getByUserId(userId) {
         const connection = await conectarDB();
         return new Promise(async (resolve, reject) => {
             try {
-                let query = 'SELECT * FROM orders WHERE id_user = ?';
+                let query = 'SELECT * FROM orders WHERE id_user = ? ORDER BY date_order DESC';
                 let values = [userId];
 
                 if (!connection.query) {
                     // PostgreSQL
-                    query = 'SELECT * FROM orders WHERE id_user = $1';
+                    query = 'SELECT * FROM orders WHERE id_user = $1 ORDER BY date_order DESC';
                 }
 
                 if (connection.query) {
