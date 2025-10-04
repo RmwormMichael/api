@@ -143,7 +143,7 @@ class Orders {
     }
 
     // Actualizar pedido por ID
-    static async update(id, data) {
+    static async update(id, data) {y
         const connection = await conectarDB();
         return new Promise(async (resolve, reject) => {
             try {
