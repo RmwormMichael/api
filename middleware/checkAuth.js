@@ -11,41 +11,35 @@ const checkAuth = async (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log('Token decodificado - ID:', decoded.id);
 
-        const connection = await conectarDB();
+        const pool = await conectarDB();
         
-        // Usar promesas en lugar de callback para mejor control
-        const query = (conn, sql, params) => {
-            return new Promise((resolve, reject) => {
-                conn.query(sql, params, (error, results) => {
-                    if (error) reject(error);
-                    else resolve(results);
-                });
-            });
-        };
-
         try {
-            const results = await query(
-                connection, 
-                "SELECT id_user, nombre, email, rol FROM user WHERE id_user = $1",
-                [decoded.id]
-            );
+            // CORRECCIÓN: Usar id_user en lugar de id
+            const query = 'SELECT id_user, nombre, email, rol FROM "user" WHERE id_user = $1';
+            const result = await pool.query(query, [decoded.id]);
+            
+            console.log('Resultados de la consulta:', result.rows);
 
-            if (results.length === 0) {
-                if (connection.end) connection.end();
-                return res.status(401).json({ msg: "Token no válido" });
+            if (result.rows.length === 0) {
+                return res.status(401).json({ msg: "Usuario no encontrado" });
             }
 
-            req.usuario = results[0];
+            // CORRECCIÓN: Usar id_user en lugar de id
+            req.usuario = {
+                id_user: result.rows[0].id_user,
+                nombre: result.rows[0].nombre,
+                email: result.rows[0].email,
+                rol: result.rows[0].rol
+            };
             
-            // Cerrar conexión después de obtener los datos
-            if (connection.end) connection.end();
+            console.log('Usuario autenticado:', req.usuario);
             next();
 
         } catch (queryError) {
-            if (connection.end) connection.end();
-            console.error("Error en consulta:", queryError);
-            return res.status(401).json({ msg: "Token no válido" });
+            console.error("Error en consulta SQL:", queryError);
+            return res.status(401).json({ msg: "Error en autenticación" });
         }
 
     } catch (error) {

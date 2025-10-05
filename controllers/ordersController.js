@@ -1,21 +1,21 @@
-// controllers/ordersController.js
+// CORRECCIÓN en ordersController.js
 import Orders from "../models/orders.js";
 
-// Crear un nuevo pedido
+// Crear un nuevo pedido - CORREGIDO
 const createOrder = async (req, res) => {
-    const { date_order, direction, id_user, description } = req.body;
+    const { date_order, direction, description } = req.body;
 
     try {
+        // ✅ CORRECCIÓN: Usar req.usuario.id_user del token, NO del body
         const orderData = {
-            id_user,
-            status: "en proceso", // Estado por defecto
+            id_user: req.usuario.id_user, // ← SEGURIDAD: Usar el ID del usuario autenticado
+            status: "en proceso",
             date_order,
             direction,
             description
         };
 
         await Orders.create(orderData);
-
         res.status(201).json({ msg: "Pedido creado correctamente" });
     } catch (error) {
         console.error("Error al crear el pedido:", error);
@@ -23,12 +23,9 @@ const createOrder = async (req, res) => {
     }
 };
 
-
-
 // Obtener todos los pedidos (solo para admin)
 const getOrders = async (req, res) => {
     try {
-        // Verificar si el usuario es admin
         if (req.usuario.rol !== 'admin') {
             return res.status(403).json({ msg: "No autorizado" });
         }
@@ -70,12 +67,10 @@ const getMyOrders = async (req, res) => {
     }
 };
 
-
-
-// Actualizar un pedido
+// Actualizar un pedido - CORREGIDO (seguridad)
 const updateOrder = async (req, res) => {
     const { id } = req.params;
-    const { status, date_order, direction, id_user, description } = req.body;
+    const { status, date_order, direction, description } = req.body; // ❌ QUITAR id_user del body
 
     try {
         const order = await Orders.getById(id);
@@ -83,30 +78,24 @@ const updateOrder = async (req, res) => {
             return res.status(404).json({ msg: "Pedido no encontrado" });
         }
 
-        // Crear el objeto solo con los campos que vienen en el body
+        // ✅ CORRECCIÓN: No permitir cambiar id_user por seguridad
         const updatedOrder = {};
-
-        if (id_user !== undefined) updatedOrder.id_user = id_user;      // Mantiene el id_user si existe
-        if (status !== undefined) updatedOrder.status = status;         // Actualiza el status si existe
-        if (date_order !== undefined) updatedOrder.date_order = date_order;  
-        if (direction !== undefined) updatedOrder.direction = direction;  
+        if (status !== undefined) updatedOrder.status = status;
+        if (date_order !== undefined) updatedOrder.date_order = date_order;
+        if (direction !== undefined) updatedOrder.direction = direction;
         if (description !== undefined) updatedOrder.description = description;
 
-        // Si no hay campos para actualizar
         if (Object.keys(updatedOrder).length === 0) {
             return res.status(400).json({ msg: "No se enviaron campos para actualizar" });
         }
 
         await Orders.update(id, updatedOrder);
-
         res.status(200).json({ msg: "Pedido actualizado correctamente" });
     } catch (error) {
         console.error("Error al actualizar el pedido:", error);
         res.status(500).json({ msg: "Error al actualizar el pedido", error });
     }
 };
-
-
 
 // Eliminar un pedido
 const deleteOrder = async (req, res) => {
@@ -125,6 +114,5 @@ const deleteOrder = async (req, res) => {
         res.status(500).json({ msg: "Error al eliminar el pedido", error });
     }
 };
-
 
 export { createOrder, getOrders, getOrder, getMyOrders, updateOrder, deleteOrder };

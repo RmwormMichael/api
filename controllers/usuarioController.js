@@ -62,7 +62,7 @@ const autenticar = async (req, res) => {
         }
 
         const usuarioSinSensibles = {
-            id: usuario.id_user,
+            id_user: usuario.id_user,
             nombre: usuario.nombre,
             email: usuario.email,
             rol: usuario.rol,
@@ -100,7 +100,7 @@ const confirmar = async (req, res) => {
         // Actualizar la columna confirmed a true
         await Usuario.update(usuario.id_user, { confirmed: true });
 
-        
+
         console.log("Cuenta confirmada para:", usuario.email);
 
         // ✅ Redirige al frontend después de confirmar
