@@ -39,10 +39,15 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: true, // ✅ Permite cualquier origen
+  credentials: true, // ✅ Importante para autenticación
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
 
 // Manejar preflight requests
-app.options('*', cors(corsOptions));
+app.options('*', cors());
 
 // Routing
 app.use('/api/usuarios', usuarioRoute);
